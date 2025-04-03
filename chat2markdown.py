@@ -35,14 +35,23 @@ def parse_conversation(data):
             msg_content = message.get("message")
             if msg_content:
                 author = msg_content.get("author", {}).get("role", "unknown")
+                # Get the first part from the "parts" list
                 content_parts = msg_content.get("content", {}).get("parts", [""])[0]
+                
+                # Check if content_parts is a dictionary; if so, extract a string from it.
+                if isinstance(content_parts, dict):
+                    # Adjust the key ('text') if your JSON structure uses a different key.
+                    content_str = content_parts.get("text", "")
+                else:
+                    content_str = content_parts
+
                 create_time = msg_content.get("create_time", 0)
 
                 # Only add messages that have non-empty content
-                if content_parts.strip():
+                if content_str.strip():
                     ordered_messages.append({
                         "role": author,
-                        "content": content_parts.strip(),
+                        "content": content_str.strip(),
                         "timestamp": create_time
                     })
 
